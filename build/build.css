@@ -381,12 +381,63 @@ dfn {
 
 /* The textarea where the user is typing: */
 #flows_in {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
   border: var(--border-base);
-  padding: 0.25em;
-  margin: 0.25em;
+  border-radius: 4px;
+  padding: 6px 8px;
+  margin: 0;
   font-family: sans-serif;
   font-size: small;
+  line-height: 1.35;
   vertical-align: middle;
+  resize: vertical;
+}
+
+.flows_input_container {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 2px 0 0 0;
+}
+
+.input_actions_row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 6px 0 8px 0;
+}
+
+.input_action_btn {
+  flex: 1 1 0;
+  min-width: 0;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.preview_button,
+button#preview_graph {
+  background-color: var(--medium-blue);
+  color: white;
+  border-radius: 0.4em;
+  border: var(--border-base);
+  cursor: pointer;
+  vertical-align: middle;
+  padding: 0.35em 0.5em;
+  font-size: small;
+  font-weight: bold;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.preview_button:hover,
+button#preview_graph:hover {
+  background-color: var(--light-blue);
 }
 
 .form_elements {
@@ -767,6 +818,7 @@ fieldset { border: var(--border-light); }
   font-size: small;
   background-color: var(--dark-blue);
   min-width: 5.2em;
+  white-space: nowrap;
 }
 
 .loadsave_button:hover {
@@ -774,9 +826,13 @@ fieldset { border: var(--border-light); }
 }
 
 .label_as_button {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   box-sizing: border-box;
-  width: 100%;
+  width: auto;
+  text-align: center;
+  margin: 0;
 }
 
 input[type="file"]:focus + label {
