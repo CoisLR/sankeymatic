@@ -1,0 +1,6 @@
+Use best practices web design and development modify the application as follows but still keep the original technologies used the same.
+Clean up the UI by removeing the following elements from the ui as well as the acompanying code in the back end:
+Replace Horizontal bar with SankeyMatic with "Sankey Diagram Builder" and remove  links to News, Data, Gallery, Manual, and About.
+
+Remove at the bottom of the web page all the elements from the UI starting with "If you find SankeyMATIC useful, please consider donating to support further development. Thanks!" and everything underneath it. Reorder all the parts of the UI so that maximum use is made of the width of the web browser window.
+Move the Inputs:, Labels...,Nodes:,Flows: and Layout Options... to the left of the browser window to maximise the area where the graph is shown and make the area vertically higher and the area must be to the righ outer edge of the browser window.

@@ -42,9 +42,12 @@
 
 body {
   font-size: small;
-  font-family: sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background-color: #FBFDFD;
   margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* items for screen readers which do not need to be visible: */
@@ -285,7 +288,14 @@ a:not(.internal-link)[target="_blank"]:focus-visible {
   border-top: var(--border-dotted);
 }
 
-main { margin: 1em; }
+main {
+  margin: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+}
 
 /* cellspacing=0 for all tables */
 table {
@@ -338,9 +348,7 @@ dfn {
 }
 
 .center_basic {
-  /* centering, in 2014: :-\ */
   margin: 0 auto;
-  display: table;
 }
 
 .center { margin-inline: auto; }
@@ -565,10 +573,11 @@ p.lastrow {
 }
 
 p#chart {
-  width: 600px;
-  height: 500px;
-  border: 1px dotted #666;
-  margin: 0.4em auto;
+  border: 1px dotted #888;
+  margin: 0.25em 0;
+  background-color: white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  border-radius: 4px;
 }
 
 .svg_background_default {
@@ -594,11 +603,76 @@ svg g#sankey_labels rect {
    The 'stroke' is all we are seeing, so that is what gets colored.
    The stroke styling is now done in the JS, not the overall CSS. */
 
-
 .diagram_controls {
-  padding: 0 2px;
-  background-color: #cce8ff;
-  vertical-align: start;
+  width: 440px;
+  min-width: 400px;
+  max-width: 480px;
+  height: calc(100vh - 105px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  border-right: 1px solid var(--gray-blue);
+  background-color: #edf5fa;
+  padding: 4px 6px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.diagram_workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0.5rem 1rem 1rem 1rem;
+  overflow: auto;
+  box-sizing: border-box;
+  min-width: 0;
+  background-color: var(--bg-palest);
+}
+
+.app_workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 0;
+}
+
+.app_toolbar {
+  background-color: #f0f6fa;
+  border-bottom: 1px solid var(--gray-blue);
+  padding: 0.35em 0.75em;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.toolbar_group {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.toolbar_label {
+  font-size: 0.9em;
+  color: var(--deep-blue);
+}
+
+.export_toolbar p#download_central {
+  margin: 0;
+  border: 1px solid var(--gray-blue);
+  background-color: white;
+  border-radius: 4px;
+  padding: 0.2em 0.5em;
+}
+
+.app_form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0;
 }
 
 td#grapharea {
@@ -911,131 +985,27 @@ input:checked ~ label.ropt,
 .header {
   color: white;
   background-color: var(--nav-level-1-bg);
-  padding: 0.25em 1em 0.1em;
+  padding: 0.5em 1.25em;
   border-bottom: var(--border-base);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .header a { color: white; }
 
-.header__nav {
-  max-width: var(--screen-lg);
-  width: 100%;
-  font-size: initial;
-  padding: 3px;
+.header__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
 }
 
-.header__logo {
-  text-decoration: none;
-  font-size: 1.1em;
-  font-weight: bold;
+.header__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: white;
 }
-
-.header__logo:hover {
-  color: inherit;
-  text-decoration: none;
-}
-
-.header__logo img {
-  margin-right: .5em;
-  padding-bottom: 3px;
-}
-
-.header__links {
-  list-style: none;
-  padding: 0;
-  margin: 0 1em;
-  font-size: 1.1em;
-}
-
-.header__links a {
-  color: inherit;
-  margin-left: 1.5em;
-  font-weight: 500;
-  text-decoration: underline;
-  text-decoration-color: transparent;
-  text-decoration-thickness: 0.1em;
-  text-underline-offset: 0.1em;
-}
-
-.header__links li:first-child a{
-  margin-left: 0;
-}
-
-.header__links a:hover{
-  text-decoration-color: var(--lighter-blue);
-}
-
-
-hr.ad_divider { border-top: 4px double var(--medium-blue); }
-
-.ad_center {
-  margin: 0.5em auto;
-  text-align: center;
-}
-
-.reset-fonts {
-  font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-  font-size: initial;
-}
-
-.footer {
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-  background-color: var(--lighter-gray);
-  border-top: 1px dotted var(--button-blue)
-}
-
-.footer p {
-  margin-block: 0.8em;
-}
-
-.footer__inner {
-  max-width: var(--screen-lg);
-  padding: 1em;
-}
-
-.footer__content {
-  font-size: 1.2em;
-  max-width: var(--screen-sm);
-}
-
-.footer__nav {
-  font-size: 1.1em;
-  font-weight: bold;
-  padding-left: 1em;
-  flex-shrink: 0;
-}
-
-.footer__nav ul {
-  list-style: none;
-  padding: 0;
-  margin: 0 1em;
-}
-
-.footer__nav ul:last-child {
-  margin-right: 0;
-}
-
-.footer__nav ul li {
-  margin: 0 1em;
-}
-
-.footer__nav a,
-.footer__inner a {
-  color: var(--medium-blue);
-  text-decoration: underline;
-  text-decoration-thickness: 0.08em;
-  text-underline-offset: 0.1em;
-}
-
-.footer__nav a:hover,
-.footer__inner a:hover {
-  color: black;
-  text-decoration-color: var(--lighter-blue)
-}
-
-.footer .callout-container { background-color: var(--nav-level-1-bg); }
 
 details {
   margin-block-start: 0.25em;
@@ -1072,59 +1042,35 @@ fieldset.simple {
   background-color: var(--bg-light);
 }
 
-.skm_grid {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-rows: auto auto auto 1fr;
-  grid-template-areas:
-    "controls export"
-    "controls size"
-    "controls main"
-    "controls about";
-  grid-column-gap: var(--grid-gap);
-}
+/* Media Queries & Responsive Layout */
 
-.skm_grid > div {
-  height: fit-content;
-}
-
-.skm_grid > .diagram_controls { grid-area: controls; }
-.diagram_size     { grid-area: size; }
-.diagram_export   { grid-area: export; }
-.diagram_main     { grid-area: main; }
-.diagram_about    { grid-area: about; }
-
-/* media query land */
-
-@media screen and (width <= 1024px) {
-  .hs-md-vs { flex-direction: column; }
-
-  .footer__content { text-align: center; }
-
-  .footer__nav{
-    padding-left: 0;
-    margin-top: 1em;
+@media (max-width: 900px) {
+  .app_toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5em;
   }
 
-  .footer__nav ul{ margin: 0 .75em; }
-}
+  .app_workspace {
+    flex-direction: column;
+  }
 
-@media (width <= 900px) {
-  main { margin: 0.5em; }
+  .diagram_controls {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--gray-blue);
+  }
 
-  .okmessage { place-self: center; }
+  .diagram_workspace {
+    width: 100%;
+    padding: 0.5rem;
+  }
 
-  .skm_grid {
-    grid-template-columns: 100vw;
-    grid-template-rows: auto;
-    grid-template-areas:
-      "main"
-      "export"
-      "about"
-      "size"
-      "controls";
-    justify-items: center;
-    grid-row-gap: var(--grid-gap);
+  p#chart {
+    max-width: 100%;
   }
 
   #reset_moves_area,
@@ -1133,19 +1079,4 @@ fieldset.simple {
     line-height: 1.8em;
     text-wrap: pretty;
   }
-
-  p#chart { max-width: 100vw; }
-}
-
-@media screen and (width <= 675px) {
-  main { margin: 0.5em 0; }
-
-  .hs-sm-vs { flex-direction: column; }
-
-  .header__links {
-    margin-top: 0.75em;
-    margin-bottom: 0;
-  }
-
-  .footer__nav ul li { margin: 0.3em; }
 }

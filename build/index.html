@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="initial-scale=1">
-<title>SankeyMATIC: Build a Sankey Diagram</title>
+<title>Sankey Diagram Builder</title>
 <link rel="stylesheet" href="build.css">
 <script defer src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" crossorigin="anonymous"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/canvg@3/lib/umd.js" crossorigin="anonymous"></script>
@@ -12,7 +12,7 @@
 <script defer src="lz-string.min.js"></script>
 <script defer src="sankeymatic.js"></script>
 <meta name="description" content="Make beautiful Sankey diagrams. Export them as images or SVG with this free data visualization tool." />
-<meta property="og:title" content="SankeyMATIC: Build a Sankey Diagram" />
+<meta property="og:title" content="Sankey Diagram Builder" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://sankeymatic.com/build/" />
 <meta property="og:description" content="Make beautiful flow diagrams. Export them as images or SVG." />
@@ -29,52 +29,59 @@
 </head>
 <body>
 <header class="header vs f-middle">
-  <nav class="header__nav hs-sm-vs space-between">
-  <a href="/" title="SankeyMATIC home page" class="header__logo hs f-middle align-center"><img alt="SankeyMATIC logo" src="i/SKM-trsp-300.png" height="27" width="27" class="skm_logo_small" />&nbsp;SankeyMATIC</a>
-  <ul class="header__links hs f-middle">
-    <li><a href="/news/" title="What's New with SankeyMATIC">News</a></li>
-    <li><a href="/data/" title="Interesting Diagrams from the Real World">Data</a></li>
-    <li><a href="/gallery/" title="Gallery of SankeyMATIC Examples">Gallery</a></li>
-    <li><a href="/manual/" title="How to use SankeyMATIC to the fullest">Manual</a></li>
-    <li><a href="/about/" title="About SankeyMATIC and how to support the site">About</a></li>
-  </ul>
-  </nav>
+  <div class="header__brand hs f-middle align-center">
+    <img alt="Sankey Diagram Builder logo" src="i/SKM-trsp-300.png" height="27" width="27" class="skm_logo_small" />
+    <span class="header__title">&nbsp;Sankey Diagram Builder</span>
+  </div>
 </header>
-<div class="callout-container pad-small">If you find SankeyMATIC useful, please consider <a href="../about/" class="internal-link" title="(new window) About SankeyMATIC and how to support the site" target="_blank">donating to support further development</a>. Thanks!</div>
 
 <main>
-<div id="example_diagrams" class="text_center">
-<div class="hs-sm-vs f-middle gap-small">
-<h4>Sample Diagrams &amp; Starting Points:</h4>
-<div class="hs-md-vs gap-tiny">
-<div class="hs space-between">
-<button type="button" id="load_example_simple" onclick="replaceGraph('simple_start'); return false;">Start Simple</button>
-<button type="button" id="load_example_financial_results" onclick="replaceGraph('financial_results'); return false;">Financial Results</button>
-<button type="button" id="load_example_job_search" onclick="replaceGraph('job_search'); return false;">Job Search</button>
-</div>
-<div class="hs space-between">
-<!-- <button type="button" id="load_example_energy_all" onclick="replaceGraph('energy_flows_all'); return false;">Energy Flows</button> &nbsp; -->
-<button type="button" id="load_example_journey" onclick="replaceGraph('journey'); return false;">Journey</button>
-<button type="button" id="load_example_election" onclick="replaceGraph('election'); return false;">Ranked Election</button>
-<button type="button" id="load_example_basic_budget" onclick="replaceGraph('default_budget'); return false;">Budget</button>
-</div>
-</div>
+<div class="app_toolbar hs space-between f-middle flex-wrap">
+  <div id="example_diagrams" class="toolbar_group">
+    <div class="hs f-middle gap-small flex-wrap">
+      <span class="toolbar_label"><strong>Samples:</strong></span>
+      <div class="hs gap-tiny flex-wrap">
+        <button type="button" id="load_example_simple" onclick="replaceGraph('simple_start'); return false;">Start Simple</button>
+        <button type="button" id="load_example_financial_results" onclick="replaceGraph('financial_results'); return false;">Financial Results</button>
+        <button type="button" id="load_example_job_search" onclick="replaceGraph('job_search'); return false;">Job Search</button>
+        <button type="button" id="load_example_journey" onclick="replaceGraph('journey'); return false;">Journey</button>
+        <button type="button" id="load_example_election" onclick="replaceGraph('election'); return false;">Ranked Election</button>
+        <button type="button" id="load_example_basic_budget" onclick="replaceGraph('default_budget'); return false;">Budget</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toolbar_group export_toolbar">
+    <p id="download_central" class="share-box">
+      <strong class="padded-inline">Export:</strong>
+      <button id="save_as_png_2x" type="submit" title="PNG image file: 1200 x 1200" onclick="saveDiagramAsPNG(2); return false;"><strong>Save .PNG image</strong></button>
+      <span class="toggleable" onclick="togglePanel('png_size_options');" title="Select to choose another resolution">
+      <span id="png_size_options_indicator" class="indicator1">+</span>
+      <small>more</small><span id="png_size_options_hint">...</span></span>
+      <span id="png_size_options" style="display: none;">
+        <button id="save_as_png_4x" type="submit" title="PNG image file: 2400 x 2400" onclick="saveDiagramAsPNG(4); return false;"><strong>Large</strong> (4x)</button>
+        <button id="save_as_png_6x" type="submit" title="PNG image file: 3600 x 3600" onclick="saveDiagramAsPNG(6); return false;"><strong>Huge</strong> (6x)</button>
+        <button id="save_as_png_1x" type="submit" title="PNG image file: 600 x 600" onclick="saveDiagramAsPNG(1); return false;"><strong>Tiny</strong> (1x)</button>
+      </span>
+      <span class="padded-inline">or</span>
+      <button id="save_as_svg" type="submit" title="Save this diagram as a Scalable Vector Graphics file" onclick="saveDiagramAsSVG(); return false;"><strong>Download .SVG</strong></button>
+      <span class="padded-inline">or</span>
+      <button id="share_button" type="submit" onclick="openGetLinkDialog(); return false;" title="See options for generating a link to this diagram" class="padded-inline"><strong>Get a public link...</strong></button>
+    </p>
+  </div>
+
+  <p id="replace_graph_warning" style="display: none;">
+    <em>This will <strong>erase</strong> your changes. Are you sure?</em><br>
+    <input type="hidden" id="demo_graph_chosen" value="" />
+    <button type="button" id="replace_graph_yes" onclick="replaceGraphConfirmed(); return false;">Yes, replace the diagram</button>
+    <button type="button" id="replace_graph_no" onclick="hideReplaceGraphWarning(); return false;">Cancel</button>
+  </p>
 </div>
 
-<p id="replace_graph_warning" style="display: none;">
-<em>This will <strong>erase</strong> your changes. Are you sure?</em><br>
-<input type="hidden" id="demo_graph_chosen" value="" />
-<button type="button" id="replace_graph_yes" onclick="replaceGraphConfirmed(); return false;">Yes, replace the diagram</button>
-<button type="button" id="replace_graph_no" onclick="hideReplaceGraphWarning(); return false;">Cancel</button>
-</p>
-</div>
+<form id="skm_form" onsubmit="process_sankey(); return false;" class="app_form">
+<div class="app_workspace">
 
-<div class="center_basic">
-<form id="skm_form" onsubmit="process_sankey(); return false;">
-
-<div class="skm_grid">
-
-<div class="center diagram_controls">
+<div class="diagram_controls">
 
 <h2 class="ui_head" onclick="togglePanel('input_options');">
 <span id="input_options_indicator" class="indicator">&ndash;</span>
@@ -511,32 +518,96 @@ Diagram Scales match as closely as possible.
 
 </div> <!-- End LAYOUT -->
 
-</div> <!-- End Left Column -->
+<!-- SIZE & SPACING & BACKGROUND -->
+<h2 class="ui_head" onclick="togglePanel('diagram_options');">
+<span id="diagram_options_indicator" class="indicator">&ndash;</span>
+Diagram Size &amp; Background<span id="diagram_options_hint">:</span></h2>
 
-<div class="diagram_export">
-<!-- EXPORT -->
-<div class="expandable_box">
-<p id="download_central" class="share-box">
-<strong class="padded-inline">Share:</strong>
+<div id="diagram_options" class="form_chunk">
+<p class="form_elements1">
+<span class="no_wrap"><label for="size_w" title="Diagram Width in pixels"><strong>Width:</strong></label>
+<input id="size_w" type="number" class="number_10000s" min="40" value="600" step="2" onchange="process_sankey();"></span>
+<span class="no_wrap"><label for="size_h" class="spaced_label" title="Diagram Height in pixels"><strong>Height:</strong></label>
+<input id="size_h" type="number" class="number_10000s" min="40" value="600" step="2" onchange="process_sankey();"></span>
+<button type="button" id="fit_to_window" onclick="fitDiagramToWindow(); return false;" class="smalllabel spaced_label" title="Expand diagram to fit available window area">Fit to Window</button>
 
-<button id="share_button" type="submit" onclick="openGetLinkDialog(); return false;" title="See options for generating a link to this diagram" class="padded-inline"><strong>Get a public link...</strong></button>
-
-<span class="padded-inline">or</span>
-
-<button id="save_as_png_2x" type="submit" title="PNG image file: 1200 x 1200" onclick="saveDiagramAsPNG(2); return false;"><strong>Save as a .PNG image</strong></button>
-<span class="toggleable" onclick="togglePanel('png_size_options');" title="Select to choose another resolution">
-<span id="png_size_options_indicator" class="indicator1">+</span>
-<small>more</small><span id="png_size_options_hint">...</span></span>
-<span id="png_size_options" style="display: none;">
-<button id="save_as_png_4x" type="submit" title="PNG image file: 2400 x 2400" onclick="saveDiagramAsPNG(4); return false;"><strong>Large</strong> (4x)</button>
-<button id="save_as_png_6x" type="submit" title="PNG image file: 3600 x 3600" onclick="saveDiagramAsPNG(6); return false;"><strong>Huge</strong> (6x)</button>
-<button id="save_as_png_1x" type="submit" title="PNG image file: 600 x 600" onclick="saveDiagramAsPNG(1); return false;"><strong>Tiny</strong> (1x)</button>
-</span>
-
-<span class="padded-inline">or</span>
-
-<button id="save_as_svg" type="submit" title="Save this diagram as a Scalable Vector Graphics file" onclick="saveDiagramAsSVG(); return false;"><strong>Download .SVG</strong></button>
+<label for="bg_color" class="spaced_label"><strong>Background Color:</strong></label>
+<input type="color" id="bg_color" size="7" maxlength="7" value="#FFFFFF" onchange="process_sankey();">
+<input type="checkbox" id="bg_transparent" value="1" onchange="process_sankey();" class="spaced_checkbox"><label for="bg_transparent" class="ropt">Transparent</label><br>
 </p>
+
+<p class="form_elements2">
+<strong>Margins:</strong>
+<span class="no_wrap"><label for="margin_l" class="spaced_label">Left</label>
+<input id="margin_l" type="number" class="number_100s" min="0" value="12" step="1" onchange="process_sankey();">
+<label for="margin_r">Right</label>
+<input id="margin_r" type="number" class="number_100s" min="0" value="12" step="1" onchange="process_sankey();"></span>
+<span class="no_wrap"><label for="margin_t" class="spaced_label">Top</label>
+<input id="margin_t" type="number" class="number_100s" min="0" value="18" step="1" onchange="process_sankey();">
+<label for="margin_b">Bot</label>
+<input id="margin_b" type="number" class="number_100s" min="0" value="20" step="1" onchange="process_sankey();"></span>
+</p>
+</div>
+
+<!-- ABOUT THIS DIAGRAM -->
+<h2 class="ui_head" onclick="togglePanel('diagram_about_options');">
+<span id="diagram_about_options_indicator" class="indicator">&ndash;</span>
+About this diagram<span id="diagram_about_options_hint">:</span></h2>
+
+<div id="diagram_about_options" class="diagram_about form_chunk">
+<table id="messages" class="expandable_box">
+<tr><td>
+  <div id="messages_area">
+    <h4>Diagram Statistics</h4>
+    <div id="totals_area"></div>
+  </div>
+  <div id="console_area" style="display: none;">
+    <details><summary>Console</summary>
+      <div id="console_lines"></div>
+    </details>
+  </div>
+</td></tr>
+<tr><td id="imbalances_area">
+<div id="imbalance_control">
+<span class="underline"><strong><em>When Total Inputs &ne; Total Outputs:</em></strong></span><br>
+<p class="form_elements3">
+  Attach incomplete flow groups to:<br>
+<span><input name="layout_attachincompletesto" id="layout_attachto_leading" value="leading" type="radio" onchange="process_sankey();" /><label for="layout_attachto_leading" class="ropt">The leading edge of the Node</label></span><br>
+<span><input name="layout_attachincompletesto" id="layout_attachto_trailing" value="trailing" type="radio" onchange="process_sankey();" /><label for="layout_attachto_trailing" class="ropt">The trailing edge of the Node</label></span><br>
+<span><input name="layout_attachincompletesto" id="layout_attachto_nearest" value="nearest" type="radio" onchange="process_sankey();" checked="checked" /><label for="layout_attachto_nearest" class="ropt">The edge nearest to the flow group's center</label></span>
+</p>
+<p class="lastrow">
+<input type="checkbox" id="meta_listimbalances" value="1" onchange="process_sankey();" checked="checked" />
+<label class="ropt" for="meta_listimbalances">List all imbalanced Nodes</label>
+</p>
+<div id="imbalance_messages"></div>
+</div>
+</td></tr>
+</table>
+</div>
+
+</div> <!-- End diagram_controls -->
+
+<!-- RIGHT WORKSPACE: DIAGRAM -->
+<div class="diagram_workspace">
+<div id="top_messages_container">
+  <div id="info_messages"></div>
+  <div id="issue_messages"></div>
+</div>
+<p id="reset_moves_area" class="form_elements1">
+Move Nodes by <em>dragging</em>. Double-click a Node to reset, or: <button type="button" id="reset_all_moved_nodes" onclick="resetMovesAndRender(); return false;">Reset all moved Nodes</button>
+</p>
+
+<p id="chart">
+<svg id="svg_scratch" height="600" width="600" xmlns="http://www.w3.org/2000/svg" class="hidden_under"></svg>
+<svg id="sankey_svg" height="600" width="600" xmlns="http://www.w3.org/2000/svg"></svg>
+</p>
+<canvas id="png_preview" height="600" width="600" style="background-color: transparent; display: none;"></canvas>
+</div> <!-- End diagram_workspace -->
+
+</div> <!-- End app_workspace -->
+</form> <!-- End SKM Form -->
+
 <dialog id="getLinkDialog">
   <header>
     <h3>Get a public link to this SankeyMATIC diagram</h3>
@@ -569,146 +640,7 @@ Diagram Scales match as closely as possible.
     <button onclick="closeDialog('getLink');" id="closeDialogFooter">Close</button>
   </footer>
 </dialog>
-</div>
-</div>
-
-<!-- SIZE & SPACING & BACKGROUND -->
-
-<div class="diagram_size expandable_box">
-<h2 class="ui_head" onclick="togglePanel('diagram_options');">
-<span id="diagram_options_indicator" class="indicator">&ndash;</span>
-Diagram Size &amp; Background<span id="diagram_options_hint">:</span></h2>
-
-<div id="diagram_options" class="form_chunk">
-<p class="form_elements1">
-<span class="no_wrap"><label for="size_w" title="Diagram Width in pixels"><strong>Width:</strong></label>
-<input id="size_w" type="number" class="number_10000s" min="40" value="600" step="2" onchange="process_sankey();"></span>
-<span class="no_wrap"><label for="size_h" class="spaced_label" title="Diagram Height in pixels"><strong>Height:</strong></label>
-<input id="size_h" type="number" class="number_10000s" min="40" value="600" step="2" onchange="process_sankey();"></span>
-
-<label for="bg_color" class="spaced_label"><strong>Background Color:</strong></label>
-<input type="color" id="bg_color" size="7" maxlength="7" value="#FFFFFF" onchange="process_sankey();">
-<input type="checkbox" id="bg_transparent" value="1" onchange="process_sankey();" class="spaced_checkbox"><label for="bg_transparent" class="ropt">Transparent</label><br>
-</p>
-
-<p class="form_elements2">
-<strong>Margins:</strong>
-<span class="no_wrap"><label for="margin_l" class="spaced_label">Left</label>
-<input id="margin_l" type="number" class="number_100s" min="0" value="12" step="1" onchange="process_sankey();">
-<label for="margin_r">Right</label>
-<input id="margin_r" type="number" class="number_100s" min="0" value="12" step="1" onchange="process_sankey();"></span>
-<span class="no_wrap"><label for="margin_t" class="spaced_label">Top</label>
-<input id="margin_t" type="number" class="number_100s" min="0" value="18" step="1" onchange="process_sankey();">
-<label for="margin_b">Bot</label>
-<input id="margin_b" type="number" class="number_100s" min="0" value="20" step="1" onchange="process_sankey();"></span>
-</p>
-</div>
-</div>
-
-<!-- MOVING NODES -->
-<div class="diagram_main">
-<div id="top_messages_container">
-  <div id="info_messages"></div>
-  <div id="issue_messages"></div>
-</div>
-<p id="reset_moves_area" class="form_elements1">
-Move Nodes by <em>dragging</em>. Double-click a Node to reset, or: <button type="button" id="reset_all_moved_nodes" onclick="resetMovesAndRender(); return false;">Reset all moved Nodes</button>
-</p>
-
-<p id="chart">
-<svg id="svg_scratch" height="600" width="600" xmlns="http://www.w3.org/2000/svg" class="hidden_under"></svg>
-<svg id="sankey_svg" height="600" width="600" xmlns="http://www.w3.org/2000/svg"></svg>
-</p>
-<canvas id="png_preview" height="600" width="600" style="background-color: transparent; display: none;"></canvas>
-<div id="chartfooter">
-<p class="form_elements1 text_center">
-<input type="checkbox" id="meta_mentionsankeymatic" value="1" onchange="process_sankey();" checked>
-<label class="smalllabel ropt" for="meta_mentionsankeymatic">Include &ldquo;Made at SankeyMATIC.com&rdquo;</label>
-</p>
-</div>
-</div> <!-- diagram_main -->
-
-<div class="diagram_about">
-<table id="messages" class="expandable_box">
-<tr><td>
-  <div id="messages_area">
-    <h4>About this diagram</h4>
-    <div id="totals_area"></div>
-  </div>
-  <div id="console_area" style="display: none;">
-    <details><summary>Console</summary>
-      <div id="console_lines"></div>
-    </details>
-  </div>
-</td></tr>
-<tr><td id="imbalances_area">
-<div id="imbalance_control">
-<span class="underline"><strong><em>When Total Inputs &ne; Total Outputs:</em></strong></span><br>
-<p class="form_elements3">
-  Attach incomplete flow groups to:<br>
-<span><input name="layout_attachincompletesto" id="layout_attachto_leading" value="leading" type="radio" onchange="process_sankey();" /><label for="layout_attachto_leading" class="ropt">The leading edge of the Node</label></span><br>
-<span><input name="layout_attachincompletesto" id="layout_attachto_trailing" value="trailing" type="radio" onchange="process_sankey();" /><label for="layout_attachto_trailing" class="ropt">The trailing edge of the Node</label></span><br>
-<span><input name="layout_attachincompletesto" id="layout_attachto_nearest" value="nearest" type="radio" onchange="process_sankey();" checked="checked" /><label for="layout_attachto_nearest" class="ropt">The edge nearest to the flow group's center</label></span>
-</p>
-<p class="lastrow">
-<input type="checkbox" id="meta_listimbalances" value="1" onchange="process_sankey();" checked="checked" />
-<label class="ropt" for="meta_listimbalances">List all imbalanced Nodes</label>
-</p>
-<div id="imbalance_messages"></div>
-</div>
-</td></tr>
-</table>
-</div> <!-- diagram_about -->
-
-</div> <!-- End skm_grid -->
-</form> <!-- End SKM Form -->
-
-</div>
-<!-- ====================== Bottom Matter ====================== -->
 
 </main>
-
-<hr class="ad_divider" />
-<div class="ad_center">
-</div>
-
-<footer class="footer vs align-center reset-fonts">
-  <div class="callout-container pad-medium">
-  <span class="indented">If you find SankeyMATIC useful, please consider <a href="../about/" class="internal-link" title="(new window) About SankeyMATIC and how to support the site" target="_blank">donating to support further development</a>. Thanks!</span>
-  </div>
-  <div class="footer__inner hs-md-vs align-center space-around">
-    <div class="footer__content text_left">
-    <p>
-    Follow:
-  🦣&nbsp;<strong><a href="https://vis.social/@SankeyMATIC" title="(new window) SankeyMATIC's Mastodon account" target="_blank" rel="noopener me">@SankeyMATIC@vis.social</a></strong>
-    </p>
-    <p>
-    <strong>SankeyMATIC</strong> is produced by
-  <a href="http://nowthis.com/" title="(new window) Steve's personal site" target="_blank" rel="noopener">Steve Bogart</a>
-  <small>(🦣&nbsp;<a href="https://tilde.zone/@nowthis" title="(new window) Steve's Mastodon account" target="_blank" rel="noopener">@nowthis@tilde.zone</a>)</small>.
-    </p>
-    <p>
-  <small><a href="https://github.com/nowthis/sankeymatic" title="(new window) SankeyMATIC source code at GitHub" target="_blank" rel="noopener"><strong>Source code</strong> is available</a> at GitHub.<br>
-  SankeyMATIC builds on the open source tool <a href="http://d3js.org/" title="(new window) D3's home page" target="_blank" rel="noopener">D3.js</a><br>
-  &amp; a modified version of its <a href="https://github.com/d3/d3-sankey" title="(new window) The D3 Sankey plugin at GitHub" target="_blank" rel="noopener">Sankey plugin</a>.
-    </small>
-    </p>
-  <p><a href="/privacy/">Privacy Policy</a></p>
-    </div>
-
-    <div class="footer__nav">
-    <ul class="hs-sm-vs align-center">
-    <li><a title="SankeyMATIC home page" href="/">Home</a></li>
-    <li><a title="What's New with SankeyMATIC" href="/news/">News</a></li>
-    <li><a href="/data/" title="Interesting Diagrams from the Real World">Data</a></li>
-    <li><a title="Gallery of SankeyMATIC Examples" href="/gallery/">Gallery</a></li>
-    <li><a title="How to use SankeyMATIC to the fullest" href="/manual/">Manual</a></li>
-    <li><a title="About SankeyMATIC and how to support the site" href="/about/">About</a></li>
-    </ul>
-    </div>
-
-  </div>
-</footer>
-
 </body>
 </html>

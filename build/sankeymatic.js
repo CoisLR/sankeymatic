@@ -570,9 +570,17 @@ function setValueOnPage(sName, dataType, cVal) {
   switch (dataType) {
     case 'radio': radioRef(sName).value = cVal; break;
     // cVal is expected to be boolean at this point for checkboxes:
-    case 'yn': el(sName).checked = cVal; break;
+    case 'yn': {
+      const ynEl = el(sName);
+      if (ynEl) { ynEl.checked = cVal; }
+      break;
+    }
     // All remaining types (color, list, text, whole/decimal/etc.):
-    default: el(sName).value = cVal;
+    default: {
+      const dEl = el(sName);
+      if (dEl) { dEl.value = cVal; }
+      break;
+    }
   }
 }
 
@@ -684,6 +692,24 @@ glob.replaceGraphConfirmed = () => {
   // In case the new breakpoint > the prior max, reset those now:
   glob.resetMaxBreakpoint(MAXBREAKPOINT);
   Object.entries(savedRecipe.settings).forEach(([fld, newVal]) => {
+    // Keep expanded width and height if available so diagrams fill the workspace:
+    if (fld === 'size_w' || fld === 'size_h') {
+      const workspaceEl = document.querySelector('.diagram_workspace');
+      if (workspaceEl) {
+        const availW = Math.max(600, Math.floor(workspaceEl.clientWidth - 28)),
+          availH = Math.max(500, Math.floor(window.innerHeight - 130)),
+          w = availW - (availW % 2),
+          h = availH - (availH % 2);
+        if (fld === 'size_w') {
+          setValueOnPage('size_w', 'whole', Math.max(newVal, w));
+          return;
+        }
+        if (fld === 'size_h') {
+          setValueOnPage('size_h', 'whole', Math.max(newVal, h));
+          return;
+        }
+      }
+    }
     const fldData = skmSettings.get(fld),
       [validSetting, finalValue] = settingIsValid(fldData, newVal, {});
     if (validSetting) { setValueOnPage(fld, fldData[0], finalValue); }
@@ -1740,26 +1766,7 @@ M${ep(n.lastPos.x)} 0 v${ep(graph.h)} m${ep(n.dx)} 0 V0`)
     .attr('font-family', cfg.labels_fontface)
     .attr('font-size', `${ep(cfg.labelname_size)}px`)
     .attr('fill', cfg.labels_color);
-  if (cfg.meta_mentionsankeymatic) {
-    // Style the mention appropriately given the size of the canvas/text:
-    const mSize = Math.max(12, cfg.labelname_size / 2, Math.cbrt(graph.h) + 3),
-      mMargin = Math.round(mSize / 2) - 1,
-      mColor
-       = cfg.bg_color === '#ffffff' ? '#336781'
-          : contrasting_gray_color(cfg.bg_color);
-    diagLabels.append('text')
-      // Anchor the text to the midpoint of the canvas (not the graph):
-      .attr('text-anchor', 'middle')
-      // x = graphW/2 is wrong when the L/R margins are uneven.. We
-      // have to use the whole width & adjust for the graph's transform:
-      .attr('x', ep(cfg.size_w / 2 - graph.final_margin_l))
-      .attr('y', ep(graph.h + cfg.margin_b - mMargin))
-      // Keep the current font, but make this small & grey:
-      .attr('font-size', `${ep(mSize)}px`)
-      .attr('font-weight', '400')
-      .attr('fill', mColor)
-      .text('Made at SankeyMATIC.com');
-  }
+
 
   if (!cfg.labels_hide && (cfg.labelname_appears || cfg.labelvalue_appears)) {
     // Add labels in a distinct layer on the top (so nodes can't block them)
@@ -2839,10 +2846,7 @@ ${escapeHTML(ef.target.logName ?? ef.target.tipName)}${unknownMsg}`
   // Were there any good flows at all? If not, offer a little help and then
   // EXIT EARLY:
   if (!goodFlows.length) {
-    msg.add(
-      'Enter a list of Flows &mdash; one per line. '
-      + 'See the <a href="/manual/" target="_blank">Manual</a> for more help.'
-      );
+    msg.add('Enter a list of Flows &mdash; one per line.');
 
     // Clear the contents of the graph in case there was an old graph left
     // over:
@@ -3034,6 +3038,51 @@ Total Outputs: <strong>${withUnits(grandTotal[OUT])}</strong>`;
 
 // Debounced version of process_sankey as event handler for keystrokes:
 glob.debounced_process_sankey = debounce(glob.process_sankey);
+
+// Function to expand diagram dimensions to fill the available browser window:
+glob.fitDiagramToWindow = () => {
+  const workspaceEl = document.querySelector('.diagram_workspace');
+  if (!workspaceEl) return;
+  const availW = Math.max(400, Math.floor(workspaceEl.clientWidth - 28)),
+    availH = Math.max(400, Math.floor(window.innerHeight - 130)),
+    w = availW - (availW % 2),
+    h = availH - (availH % 2);
+  const sizeWEl = el('size_w'),
+    sizeHEl = el('size_h');
+  if (sizeWEl) sizeWEl.value = w;
+  if (sizeHEl) sizeHEl.value = h;
+  glob.process_sankey();
+};
+
+// Fit to window width on initial load if no custom size query parameter:
+try {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (!urlParams.has('size_w')) {
+    const workspaceEl = document.querySelector('.diagram_workspace');
+    if (workspaceEl) {
+      const availW = Math.max(400, Math.floor(workspaceEl.clientWidth - 28)),
+        availH = Math.max(400, Math.floor(window.innerHeight - 130)),
+        w = availW - (availW % 2),
+        h = availH - (availH % 2);
+      const sizeWEl = el('size_w'),
+        sizeHEl = el('size_h');
+      if (sizeWEl) sizeWEl.value = w;
+      if (sizeHEl) sizeHEl.value = h;
+    }
+  }
+} catch (e) {
+  // safe fallback
+}
+
+// Window resize listener to keep sidebar height responsive:
+if (typeof window !== 'undefined') {
+  window.addEventListener('resize', debounce(() => {
+    const controlsEl = document.querySelector('.diagram_controls');
+    if (controlsEl && window.innerWidth > 900) {
+      controlsEl.style.height = `${window.innerHeight - 105}px`;
+    }
+  }, 200));
+}
 
 // Load a diagram definition from the URL if there was one:
 loadFromQueryString();
